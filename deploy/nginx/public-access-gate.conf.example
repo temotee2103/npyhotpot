@@ -1,0 +1,71 @@
+# Public access gate for the static export deployment.
+# Replace PREVIEW_SECRET with a high-entropy value before use.
+#
+# Behavior:
+# - Public frontend routes show /site-closed.html
+# - /admin and /merchant remain available
+# - Visiting /preview-PREVIEW_SECRET/ sets a temporary cookie and redirects to /
+# - After that, the same browser can browse the real frontend normally
+#
+# When you are ready to launch publicly again:
+# - remove the preview cookie map and /site-closed.html interception
+# - restore the normal frontend location:
+#
+# location / {
+#     try_files $uri $uri/ /index.html;
+# }
+
+map $cookie_npy_preview_access $npy_preview_allowed {
+    default 0;
+    PREVIEW_SECRET 1;
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+
+    server_name npyhotpot.com www.npyhotpot.com;
+    root /var/www/npyhotpot/out;
+    index index.html;
+
+    location = /preview-PREVIEW_SECRET/ {
+        add_header Set-Cookie "npy_preview_access=PREVIEW_SECRET; Path=/; Max-Age=43200; HttpOnly; SameSite=Lax" always;
+        return 302 /;
+    }
+
+    location = /site-closed.html {
+        try_files /site-closed.html =404;
+    }
+
+    location = /admin {
+        return 301 /admin/;
+    }
+
+    location ^~ /admin/ {
+        try_files $uri $uri/ /admin/index.html;
+    }
+
+    location = /merchant {
+        return 301 /merchant/;
+    }
+
+    location ^~ /merchant/ {
+        try_files $uri $uri/ /merchant/index.html;
+    }
+
+    location ^~ /_next/ {
+        try_files $uri =404;
+    }
+
+    location ~* \.(?:png|jpg|jpeg|gif|svg|webp|ico|css|js|txt|xml|woff2?)$ {
+        try_files $uri =404;
+    }
+
+    location / {
+        error_page 418 = /site-closed.html;
+        if ($npy_preview_allowed = 0) {
+            return 418;
+        }
+        try_files $uri $uri/ /index.html;
+    }
+}

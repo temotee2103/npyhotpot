@@ -32,6 +32,19 @@ The script will:
 
 - The script expects the project to live at `/var/www/npyhotpot`.
 - The script uses `sudo` for Nginx validation and reload, so your VPS user must have sudo access.
+- To temporarily close the public frontend while keeping `/admin` and `/merchant` available:
+  1. Deploy the latest build so `out/site-closed.html` exists.
+  2. Copy the example Nginx config from `deploy/nginx/public-access-gate.conf.example`.
+  3. Replace `PREVIEW_SECRET` with your own private preview suffix.
+  4. Reload Nginx.
+- The private preview entry will look like:
+
+```text
+https://npyhotpot.com/preview-your-secret/
+```
+
+- Visiting that preview URL sets a temporary preview cookie and redirects to `/`, letting the same browser access the real frontend.
+- To re-open the public site later, restore the normal frontend `location /` rule and reload Nginx.
 - If you change the deployment branch later, run:
 
 ```bash
