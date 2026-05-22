@@ -1,0 +1,63 @@
+.ui-root {
+  --ui-primary: var(--color-primary);
+  --ui-primary-dark: var(--color-primary-dark);
+  --ui-accent: #d7b295;
+  --ui-surface: var(--theme-surface-elevated);
+  --ui-border: var(--theme-border);
+  --ui-text: var(--foreground);
+  --ui-text-muted: var(--theme-muted);
+  --ui-radius-xl: 16px;
+  --ui-radius-lg: 12px;
+  --ui-radius-md: 8px;
+  --ui-gap-1: 4px;
+  --ui-gap-2: 8px;
+  --ui-gap-3: 12px;
+  --ui-gap-4: 16px;
+  --ui-gap-5: 20px;
+}
+
+.ui-root :where(section.rounded-2xl.border.border-primary\/10.bg-white.shadow-sm, section.rounded-2xl.border.border-primary\/10.bg-white.p-5.shadow-sm) {
+  border-radius: var(--ui-radius-xl);
+}
+
+.ui-root :where(div.overflow-x-auto > table) {
+  width: 100%;
+}
+
+.ui-root :where(div.overflow-x-auto > table thead) {
+  font-weight: 700;
+}
+
+.ui-root :where(div.overflow-x-auto > table th) {
+  font-size: 0.875rem;
+}
+
+.ui-root :where(div.overflow-x-auto > table td) {
+  font-size: 0.875rem;
+}
+
+.ui-root :where(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), textarea, select) {
+  border-radius: var(--ui-radius-lg);
+}
+
+.ui-root :where(button) {
+  border-radius: var(--ui-radius-lg);
+}
+
+.ui-root :where(button:disabled) {
+  cursor: not-allowed;
+}
+
+.ui-root :where(.fixed.inset-0.z-50) {
+  align-items: center;
+  justify-content: center;
+}
+
+.ui-root :where(.fixed.inset-0.z-50 > div > div) {
+  border-radius: var(--ui-radius-xl);
+}
+
+.ui-root :where(.time-input-white-icon::-webkit-calendar-picker-indicator) {
+  filter: invert(1) brightness(100%);
+  opacity: 1;
+}

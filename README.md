@@ -1,36 +1,124 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NPY Hotpot
 
-## Getting Started
+Next.js + Supabase project for the NPY Hotpot storefront, delivery flow, member system, merchant redemption, and admin back office.
 
-First, run the development server:
+## Tech Stack
+
+- Next.js App Router
+- React 19
+- Supabase database + Auth + Edge Functions
+- Tailwind CSS v4
+
+## Local Setup
+
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Create a local env file from the example:
+
+```bash
+cp .env.example .env.local
+```
+
+3. Fill in:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
+4. Run checks:
+
+```bash
+npm run lint
+```
+
+5. Start the app:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Frontend Env
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Root frontend env is documented in [`.env.example`](file:///D:/wampserver/www/npyhotpot/.env.example).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Required:
 
-## Learn More
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 
-To learn more about Next.js, take a look at the following resources:
+Optional alias:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Supabase Edge Function Secrets
 
-## Deploy on Vercel
+Edge function secrets template is documented in [`supabase/functions/.env.example`](file:///D:/wampserver/www/npyhotpot/supabase/functions/.env.example).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Core required secrets:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `PAYEX_API_BASE_URL`
+- `PAYEX_SIGNATURE_SECRET`
+- `PAYEX_CALLBACK_URL`
+- `PAYEX_RETURN_URL_SHOP`
+- `PAYEX_RETURN_URL_DELIVERY`
+- `LALAMOVE_API_BASE_URL`
+- `LALAMOVE_MARKET`
+- `LALAMOVE_API_KEY`
+- `LALAMOVE_API_SECRET`
+- `LALAMOVE_WEBHOOK_SECRET`
+
+Depending on your Payex account setup, you may also use:
+
+- `PAYEX_BASIC_AUTH_HEADER`
+- `PAYEX_BASIC_USERNAME`
+- `PAYEX_BASIC_PASSWORD`
+
+## Google OAuth
+
+For Google login / register to work:
+
+1. Enable Google provider in Supabase Auth.
+2. Add app callback URLs in Supabase Auth redirect allowlist:
+   - `http://localhost:3000/auth/callback`
+   - `https://npyhotpot.com/auth/callback`
+3. In Google Cloud OAuth client:
+   - Authorized JavaScript origins should include your local and live domains.
+   - Authorized redirect URI should point to:
+     - `https://<your-project-ref>.supabase.co/auth/v1/callback`
+
+## Release Checklist
+
+Before production release, confirm all items below:
+
+- `npm run lint` passes
+- Frontend env is set on the hosting platform
+- Supabase Edge Function secrets are set in the Supabase project
+- Required Supabase SQL migrations have been applied
+- Google OAuth callback URLs are configured for localhost and production
+- Payex callback URL is pointing to the deployed Supabase function
+- Lalamove production credentials and webhook secret are configured
+- Smoke test passes for:
+  - login
+  - Google login
+  - register
+  - profile completion gate
+  - shop checkout
+  - delivery checkout
+  - Payex callback
+  - admin login
+
+## Current Release Status
+
+At the time of the latest release-readiness pass:
+
+- `npm run lint` passes
+- There are still non-blocking warnings, mainly:
+  - `next/image` recommendations for `<img>`
+  - some React hook dependency warnings
+
+Those warnings should be tracked, but they are not blocking the minimum production release path.
