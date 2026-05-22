@@ -3,7 +3,13 @@
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { buildProfileCompletionHref, isProfileComplete, type CustomerProfileCompletionShape } from "@/lib/profile-completion";
+import {
+  buildProfileCompletionHref,
+  isProfileComplete,
+  isProfileCompletionPath,
+  normalizeProfileCompletionNext,
+  type CustomerProfileCompletionShape,
+} from "@/lib/profile-completion";
 
 type ProfileGateRow = CustomerProfileCompletionShape & {
   role: "customer" | "merchant" | "admin" | "super_admin" | null;
@@ -12,7 +18,7 @@ type ProfileGateRow = CustomerProfileCompletionShape & {
 
 function isProtectedPath(pathname: string) {
   return (
-    (pathname.startsWith("/member") && pathname !== "/member/profile") ||
+    (pathname.startsWith("/member") && !isProfileCompletionPath(pathname)) ||
     pathname === "/shop/checkout" ||
     pathname === "/delivery/checkout"
   );
@@ -53,8 +59,9 @@ function ProfileCompletionGateContent({ children }: { children: React.ReactNode 
       if (!active) return;
 
       const profile = (profileRes.data as ProfileGateRow | null) ?? null;
+      const gatedNext = normalizeProfileCompletionNext(currentPath);
       if (!profile || profile.status !== "active") {
-        router.replace(buildProfileCompletionHref(currentPath));
+        router.replace(buildProfileCompletionHref(gatedNext));
         return;
       }
       if (profile.role && profile.role !== "customer") {
@@ -62,7 +69,7 @@ function ProfileCompletionGateContent({ children }: { children: React.ReactNode 
         return;
       }
       if (!isProfileComplete(profile)) {
-        router.replace(buildProfileCompletionHref(currentPath));
+        router.replace(buildProfileCompletionHref(gatedNext));
         return;
       }
 

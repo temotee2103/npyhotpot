@@ -45,14 +45,44 @@ export function isProfileComplete(profile: CustomerProfileCompletionShape | null
   return getProfileCompletionMissingFields(profile).length === 0;
 }
 
+function parseLocalPath(path: string) {
+  const hashless = path.split("#", 1)[0] ?? path;
+  const [rawPathname, rawQuery = ""] = hashless.split("?", 2);
+  const pathname = rawPathname.endsWith("/") && rawPathname !== "/" ? rawPathname.slice(0, -1) : rawPathname;
+  return {
+    hashless,
+    pathname,
+    searchParams: new URLSearchParams(rawQuery),
+  };
+}
+
+export function isProfileCompletionPath(path?: string | null) {
+  if (!path || !path.startsWith("/")) return false;
+  return parseLocalPath(path).pathname === "/member/profile";
+}
+
+export function normalizeProfileCompletionNext(nextPath?: string | null) {
+  if (!nextPath || !nextPath.startsWith("/")) return null;
+  const parsed = parseLocalPath(nextPath);
+  if (parsed.pathname === "/member/profile") {
+    return null;
+  }
+  return parsed.hashless;
+}
+
+export function resolveProfileCompletionDestination(nextPath?: string | null) {
+  return normalizeProfileCompletionNext(nextPath) ?? "/member/profile";
+}
+
 export function buildProfileCompletionHref(nextPath?: string | null, welcome = false) {
   const params = new URLSearchParams();
   params.set("onboarding", "1");
   if (welcome) {
     params.set("welcome", "1");
   }
-  if (nextPath && nextPath.startsWith("/")) {
-    params.set("next", nextPath);
+  const normalizedNext = normalizeProfileCompletionNext(nextPath);
+  if (normalizedNext) {
+    params.set("next", normalizedNext);
   }
   return `/member/profile?${params.toString()}`;
 }

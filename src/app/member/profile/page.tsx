@@ -8,7 +8,13 @@ import { supabase } from "@/lib/supabase";
 import { MemberShell } from "@/components/member-shell";
 import { AdminFilePicker } from "@/components/admin-file-picker";
 import { UnifiedModal } from "@/components/unified-modal";
-import { getProfileCompletionMissingFields, isProfileComplete, parseStoredAddressParts, requiredProfileCompletionFields } from "@/lib/profile-completion";
+import {
+  getProfileCompletionMissingFields,
+  isProfileComplete,
+  parseStoredAddressParts,
+  requiredProfileCompletionFields,
+  resolveProfileCompletionDestination,
+} from "@/lib/profile-completion";
 import { isValidAddress } from "@/lib/validators/address";
 import { isValidE164Phone, normalizePhoneToE164 } from "@/lib/validators/phone";
 
@@ -152,12 +158,11 @@ function MemberProfilePageContent() {
   const welcomeMode = searchParams.get("welcome") === "1";
   const nextPath = (() => {
     const next = searchParams.get("next");
-    if (!next) return "/";
+    if (!next) return "/member/profile";
     try {
-      const decoded = decodeURIComponent(next);
-      return decoded.startsWith("/") ? decoded : "/";
+      return resolveProfileCompletionDestination(decodeURIComponent(next));
     } catch {
-      return "/";
+      return "/member/profile";
     }
   })();
   const missingFields = getProfileCompletionMissingFields(profile);

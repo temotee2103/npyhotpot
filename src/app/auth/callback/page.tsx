@@ -5,7 +5,7 @@ import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { Session } from "@supabase/supabase-js";
 import { hasSupabaseEnv, missingSupabaseEnv, supabase } from "@/lib/supabase";
-import { buildProfileCompletionHref, isProfileComplete } from "@/lib/profile-completion";
+import { buildProfileCompletionHref, isProfileComplete, normalizeProfileCompletionNext } from "@/lib/profile-completion";
 
 type CallbackState =
   | { kind: "loading"; message: string }
@@ -184,8 +184,7 @@ function AuthCallbackPageContent() {
       }
 
       if (!isProfileComplete(currentProfile)) {
-        const onboardingNextPath = nextPath.startsWith("/member/profile") ? null : nextPath;
-        router.replace(buildProfileCompletionHref(onboardingNextPath, source === "register"));
+        router.replace(buildProfileCompletionHref(normalizeProfileCompletionNext(nextPath), source === "register"));
         return;
       }
 

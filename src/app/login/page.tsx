@@ -7,7 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { GoogleAuthButton } from "@/components/google-auth-button";
 import { assetPath } from "@/lib/site-config";
 import { hasSupabaseEnv, missingSupabaseEnv, supabase } from "@/lib/supabase";
-import { buildProfileCompletionHref, isProfileComplete } from "@/lib/profile-completion";
+import { buildProfileCompletionHref, isProfileComplete, normalizeProfileCompletionNext } from "@/lib/profile-completion";
 import { isValidE164Phone, normalizePhoneToE164 } from "@/lib/validators/phone";
 
 function LoginPageContent() {
@@ -57,7 +57,7 @@ function LoginPageContent() {
     if (role === "admin" || role === "super_admin") return router.replace("/admin?channel=all");
     if (role === "merchant") return router.replace("/merchant/rewards/scan");
     if (!isProfileComplete(profileRes.data)) {
-      return router.replace(buildProfileCompletionHref(redirectPath));
+      return router.replace(buildProfileCompletionHref(normalizeProfileCompletionNext(redirectPath)));
     }
     return router.replace(redirectPath);
   }, [redirectPath, router]);
