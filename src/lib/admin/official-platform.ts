@@ -418,7 +418,7 @@ export async function updateOfficialProfileDetail(args: {
   if (!supabase) return { ok: false, message: "Supabase 未初始化" };
   const payload: {
     full_name: string | null;
-    phone: string | null;
+    phone?: string | null;
     role: OfficialProfileRow["role"];
     status: OfficialProfileRow["status"];
     email?: string | null;
