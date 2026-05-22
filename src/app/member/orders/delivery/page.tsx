@@ -130,6 +130,7 @@ export default function MemberDeliveryOrdersPage() {
       {loading ? (
         <section className="rounded-2xl border border-slate-200 bg-white p-5 text-sm dark:border-slate-700 dark:bg-slate-900/70">加载中...</section>
       ) : error ? (
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 text-sm dark:border-slate-700 dark:bg-slate-900/70">
           <p>{error}</p>
           <Link href="/login" className="mt-3 inline-flex rounded-lg border border-primary/40 px-3 py-1.5 text-xs font-bold text-primary hover:bg-primary/10">
             去登录

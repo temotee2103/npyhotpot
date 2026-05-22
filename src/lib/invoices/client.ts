@@ -1,6 +1,7 @@
 "use client";
 
 import { pdf } from "@react-pdf/renderer";
+import { createElement } from "react";
 import { InvoicePdfDocument, type InvoicePdfData } from "@/lib/invoices/pdf";
 
 function toBase64(bytes: Uint8Array) {
@@ -24,7 +25,7 @@ export async function generateInvoicePdfPayload(data: InvoicePdfData): Promise<{
   sha256: string;
   sizeBytes: number;
 }> {
-  const blob = await pdf(<InvoicePdfDocument data={data} />).toBlob();
+  const blob = await pdf(createElement(InvoicePdfDocument, { data })).toBlob();
   const buffer = await blob.arrayBuffer();
   const bytes = new Uint8Array(buffer);
   const hash = await crypto.subtle.digest("SHA-256", buffer);
@@ -34,4 +35,3 @@ export async function generateInvoicePdfPayload(data: InvoicePdfData): Promise<{
     sizeBytes: bytes.byteLength,
   };
 }
-
